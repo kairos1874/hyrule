@@ -1,0 +1,222 @@
+@import (reference) '~antd/lib/style/themes/default';
+@pro-card-prefix-cls: ~'@{ant-prefix}-pro-card';
+
+@gradient-min: fade(@card-skeleton-bg, 20%);
+@gradient-max: fade(@card-skeleton-bg, 40%);
+
+.@{pro-card-prefix-cls} {
+  background-color: white;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  border-radius: @card-radius;
+  width: 100%;
+
+  &-border {
+    border: @border-width-base @border-style-base @border-color-split;
+  }
+
+  &-ghost {
+    background-color: transparent;
+
+    > .@{pro-card-prefix-cls} {
+      &-header {
+        padding-left: 0;
+        padding-right: 0;
+        padding-bottom: @padding-md;
+      }
+
+      &-body {
+        padding: 0;
+        background-color: transparent;
+      }
+    }
+  }
+
+  &-split > &-body {
+    padding: 0;
+  }
+
+  &-split-vertical {
+    border-right: @border-width-base @border-style-base @border-color-split;
+  }
+
+  &-split-horizontal {
+    border-bottom: @border-width-base @border-style-base @border-color-split;
+  }
+
+  &-contain-card > &-body {
+    display: flex;
+    flex-direction: row;
+  }
+
+  &-contain-card > &-body-column {
+    flex-direction: column;
+  }
+
+  &-collapse {
+    > .@{pro-card-prefix-cls} {
+      &-header {
+        padding-bottom: @padding-md;
+        border-bottom: 0;
+      }
+
+      &-body {
+        display: none;
+      }
+    }
+  }
+
+  &-header {
+    display: flex;
+    justify-content: space-between;
+    padding: @padding-md @padding-lg;
+    padding-bottom: 0;
+    &-border {
+      & {
+        padding-bottom: @padding-md;
+      }
+      border-bottom: @border-width-base @border-style-base @border-color-split;
+    }
+  }
+
+  &-title {
+    font-size: @font-size-lg;
+  }
+
+  &-tabs {
+    // 上
+    .@{ant-prefix}-tabs-top > .@{ant-prefix}-tabs-nav {
+      margin-bottom: 0;
+      .@{ant-prefix}-tabs-nav-list {
+        padding-left: @padding-md;
+        margin-top: @margin-xs;
+      }
+    }
+
+    // 下
+    .@{ant-prefix}-tabs-bottom > .@{ant-prefix}-tabs-nav {
+      margin-top: 0;
+      .@{ant-prefix}-tabs-nav-list {
+        padding-left: @padding-md;
+      }
+    }
+
+    // 左
+    .@{ant-prefix}-tabs-left {
+      .@{ant-prefix}-tabs-content-holder {
+        .@{ant-prefix}-tabs-content {
+          .@{ant-prefix}-tabs-tabpane {
+            padding-left: 0;
+          }
+        }
+      }
+    }
+    // 直接子元素才设置
+    .@{ant-prefix}-tabs-left > .@{ant-prefix}-tabs-nav {
+      margin-right: 0;
+      .@{ant-prefix}-tabs-nav-list {
+        padding-top: @padding-md;
+      }
+    }
+
+    // 右
+    .@{ant-prefix}-tabs-right {
+      .@{ant-prefix}-tabs-content-holder {
+        .@{ant-prefix}-tabs-content {
+          .@{ant-prefix}-tabs-tabpane {
+            padding-right: 0;
+          }
+        }
+      }
+    }
+    // 直接子元素
+    .@{ant-prefix}-tabs-right > .@{ant-prefix}-tabs-nav {
+      .@{ant-prefix}-tabs-nav-list {
+        padding-top: @padding-md;
+      }
+    }
+  }
+
+  &-type-inner {
+    .@{pro-card-prefix-cls}-header {
+      background-color: @background-color-light;
+    }
+  }
+
+  &-collapsible-icon {
+    color: @icon-color-hover;
+    margin-right: 8px;
+
+    & svg {
+      transition: transform @animation-duration-base;
+    }
+  }
+
+  &-title {
+    font-weight: 500;
+  }
+
+  &-body {
+    display: block;
+    padding: @padding-lg;
+    height: 100%;
+    box-sizing: border-box;
+
+    &-center {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+  }
+
+  &-loading {
+    overflow: hidden;
+  }
+
+  &-loading &-body {
+    user-select: none;
+  }
+
+  &-loading-content {
+    p {
+      margin: 0;
+    }
+  }
+
+  &-loading-block {
+    height: 14px;
+    margin: 4px 0;
+    background: linear-gradient(
+      90deg,
+      @gradient-min,
+      @gradient-max,
+      @gradient-min
+    );
+    background-size: 600% 600%;
+    border-radius: @card-radius;
+    animation: card-loading 1.4s ease infinite;
+  }
+}
+
+@keyframes card-loading {
+  0%,
+  100% {
+    background-position: 0 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.loop-grid-columns(@index) when (@index > 0) {
+  .@{pro-card-prefix-cls}-span-@{index} {
+    width: percentage((@index / @grid-columns));
+    flex-grow: 0;
+  }
+  .loop-grid-columns((@index - 1));
+}
+
+.loop-grid-columns(@grid-columns);

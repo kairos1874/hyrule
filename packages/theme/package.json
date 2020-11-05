@@ -1,0 +1,8 @@
+{
+  "name": "@hyrule/theme",
+  "version": "0.1.0",
+  "description": "智能平台部antd主题",
+  "main": "index.js",
+  "author": "wayne1874",
+  "license": "MIT"
+}
