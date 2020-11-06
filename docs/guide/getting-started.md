@@ -44,7 +44,7 @@ $ yarn start
 $ yarn workspace packageB add packageA
 
 // 给所有的package安装依赖:
-$ yarn workspaces add lodash
+$ yarn workspace add lodash
 
 // 给root 安装依赖（一般的公用的开发工具都是安装在root里，如typescript）：
 $ yarn add -W -D typescript

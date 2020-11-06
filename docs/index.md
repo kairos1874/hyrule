@@ -1,7 +1,7 @@
 ---
 hero:
-  title: 智能平台部前端团队
-  desc: 本仓库用于技术沉淀
+  title: 华云摸鱼划水前端团队
+  desc: 本仓库用于日常工作的技术沉淀
   actions:
     - text: 快速开始 →
       link: /guide
