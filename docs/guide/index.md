@@ -9,7 +9,7 @@ nav:
   path: /guide
 ---
 
-## Hyrule 的理念
+## 理念
 
 Hyrule 取名来自于任天堂著名的高分游戏大作《塞尔达传说：旷野之息》里的海拉鲁大陆，logo 来自于游戏的宣传照。 主角 Link 站在悬崖边的石头上，眺望着海拉鲁大陆，在他面前是一个充满无限可能的开放世界，当然咯，还有无数的冒险和挑战等着他去克服。
 
@@ -24,3 +24,40 @@ Hyrule 取名来自于任天堂著名的高分游戏大作《塞尔达传说：�
 - @hyrule/snippet：代码片段整理
 - 团队文档的统一整合
 - cicd 的整合
+
+## 架构
+
+本仓库架构为 lerna + yarn workspace + dumi + father-build
+
+- lerna 负责 monorepo 形式的多包管理，已经 npm 的发包
+- yarn 负责管理依赖（使用的是 yarn workspace 模式）
+- dumi 负责文档以及 demo
+- father-build 负责打包构建（后续也有可能改用 gulp + babel 来打包）
+
+为了更好的理解和参与本项目，建议学习先大致了解和学习一些，lerna, yarn workspace 以及 dumi, 以下是一些可以参考的文章：
+
+- [Lerna 中文教程详解](https://segmentfault.com/a/1190000019350611)
+- [lerna+yarn workspace+monorepo 项目的最佳实践](https://juejin.im/post/6844903918279852046)
+- [dumi 官方文档](https://d.umijs.org/zh-CN)
+
+## 私有源
+
+（待完善）
+
+本项目构建之后，是需要发包的，后续考虑用 Sinopia 在公司内网部署搞一个私有源，并打通发包和安装依赖的全流程
+
+## 部署
+
+（待完善）
+
+后续会接入 Jenkins 来实现本文档的自动部署
+
+## 共建和反馈
+
+欢迎大家一起共建本仓库，一起沉淀技术，直接提 merge request 就可以了
+
+<Alert>
+提示：请使用 yarn run commit 代替 git commit
+</Alert>
+
+反馈和提需求的话，请提 [issue](http://172.16.120.120/hy-department-ai/hyrule-wild/hyrule/issues)

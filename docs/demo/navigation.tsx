@@ -15,6 +15,11 @@ const NAVIGATIONS = [
     link: 'http://jenkins.zn.hy.com/',
     logo: jenkinsSvg,
   },
+  {
+    name: 'Yapi',
+    link: 'http://jenkins.zn.hy.com/',
+    logo: jenkinsSvg,
+  },
 ];
 
 export default () => {

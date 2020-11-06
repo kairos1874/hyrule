@@ -9,4 +9,4 @@ nav:
   path: /develop
 ---
 
-## 技术栈
+## 环境准备
