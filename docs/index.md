@@ -34,3 +34,13 @@ $ yarn start
 ## 前端生态
 
 <code src="./demo/navigation.tsx" inline />
+
+## 共建和反馈
+
+欢迎大家一起共建本仓库，一起沉淀技术，直接提 merge request 就可以了
+
+<Alert>
+提示：请使用 yarn run commit 代替 git commit
+</Alert>
+
+反馈和提需求的话，请提 [issue](http://172.16.120.120/hy-department-ai/hyrule-wild/hyrule/issues)
