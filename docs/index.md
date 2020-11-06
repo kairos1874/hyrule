@@ -1,10 +1,10 @@
 ---
 hero:
-  title: hyrule
-  desc: hyrule site example
+  title: 智能平台部前端团队
+  desc: 本仓库用于技术沉淀
   actions:
     - text: 快速开始
-      link: /components
+      link: /guide
 features:
   - icon: https://gw.alipayobjects.com/zos/bmw-prod/881dc458-f20b-407b-947a-95104b5ec82b/k79dm8ih_w144_h144.png
     title: Feature 1
@@ -18,4 +18,19 @@ features:
 footer: Open-source MIT Licensed | Copyright © 2020<br />Powered by [dumi](https://d.umijs.org)
 ---
 
-## Hello hyrule!
+## 轻松上手
+
+```bash
+// 下载代码
+$ git clone git@172.16.120.120:hy-department-ai/hyrule-wild/hyrule.git
+
+// 安装依赖
+$ cd hyrule && yarn install
+
+// 预览文档
+$ yarn start
+```
+
+## 前端生态
+
+<code src="./demo/navigation.tsx" inline />
