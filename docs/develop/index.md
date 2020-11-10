@@ -1,5 +1,5 @@
 ---
-title: 技术栈
+title: 团队技术栈
 order: 1
 group:
   path: /

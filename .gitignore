@@ -11,6 +11,9 @@ _roadhog-api-doc
 /.vscode
 **/**/lib/**
 **/**/es/**
+docs-dist
+docs-dist.zip
+
 # misc
 .DS_Store
 npm-debug.log*
