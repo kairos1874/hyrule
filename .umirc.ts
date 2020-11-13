@@ -6,5 +6,6 @@ export default defineConfig({
   logo: '/logo.png',
   outputPath: 'docs-dist',
   mode: 'site',
+  hash: true,
   // more config: https://d.umijs.org/config
 });

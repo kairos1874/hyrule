@@ -40,11 +40,11 @@ Hyrule 取名来自于任天堂著名的高分游戏大作《塞尔达传说：�
 - [lerna+yarn workspace+monorepo 项目的最佳实践](https://juejin.im/post/6844903918279852046)
 - [dumi 官方文档](https://d.umijs.org/zh-CN)
 
-## 私有源
+## npm 私服
 
-（待完善）
+地址：[verdaccio](http://172.16.119.192:4873/)
 
-本项目构建之后，是需要发包的，后续考虑用 Sinopia 在公司内网部署搞一个私有源，并打通发包和安装依赖的全流程
+更多细节待完善
 
 ## 部署
 

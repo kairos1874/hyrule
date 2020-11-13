@@ -2,22 +2,17 @@
 
 import React from 'react';
 import jenkinsSvg from '../icon/jenkins.svg';
+import verdaccioIcon from '../icon/verdaccio.png';
 
 const NAVIGATIONS = [
   {
-    name: 'Sinopia',
-    link: 'https://umijs.org',
-    logo:
-      'https://gw.alipayobjects.com/zos/bmw-prod/598d14af-4f1c-497d-b579-5ac42cd4dd1f/k7bjua9c_w132_h130.png',
+    name: 'verdaccio',
+    link: 'http://172.16.119.192:4873',
+    logo: verdaccioIcon,
   },
   {
     name: 'Jenkins',
-    link: 'http://jenkins.zn.hy.com/',
-    logo: jenkinsSvg,
-  },
-  {
-    name: 'Yapi',
-    link: 'http://jenkins.zn.hy.com/',
+    link: 'http://172.16.119.192:8080',
     logo: jenkinsSvg,
   },
 ];
