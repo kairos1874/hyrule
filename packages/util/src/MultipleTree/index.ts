@@ -7,6 +7,11 @@ interface IOption {
   routeKey: string;
 }
 
+interface IOptionParams {
+  childrenKey?: string;
+  routeKey?: string;
+}
+
 interface IStructData {
   depth: number;
   treeIndex: string;
@@ -15,11 +20,15 @@ interface IStructData {
   isLeaf: boolean;
 }
 
-interface IFilterCallbackOption {
-  restData: object;
-  structData: IStructData;
-  originData: object;
+interface IStructDataParams {
+  depth?: number;
+  treeIndex?: string;
+  layerIndex?: number;
+  route?: string;
 }
+
+type MapCallback = (x: object, y?: IStructData, z?: object) => object | null;
+type FilterCallback = (x?: object, y?: IStructData, z?: object) => boolean;
 
 /**
  * 多叉树
@@ -29,7 +38,7 @@ class MultipleTree {
   private readonly option: IOption;
   private readonly initialStructData: object;
 
-  constructor(data = {}, option = {}, initialStructData = {}) {
+  constructor(data: object = {}, option: IOptionParams, initialStructData: IStructDataParams = {}) {
     const defaultOption = {
       childrenKey: 'children',
       routeKey: 'id',
@@ -43,7 +52,29 @@ class MultipleTree {
     this.initialStructData = initialStructData;
   }
 
-  public filter(callback: any) {
+  /**
+   * map 方法
+   * */
+  map(callback: MapCallback) {
+    const { childrenKey } = this.option;
+    // @ts-ignore
+    const { [childrenKey]: children, ...rest } = this.data;
+
+    let target: any = {
+      ...callback(rest),
+    };
+    if (Array.isArray(children) && children.length) {
+      target.children = [];
+      children.forEach(item => {
+        // target.children.push(this.map(callback))
+      });
+    }
+  }
+
+  /**
+   * filter 方法
+   * */
+  filter(callback: FilterCallback) {
     const vm = this;
     const { childrenKey } = this.option;
 
