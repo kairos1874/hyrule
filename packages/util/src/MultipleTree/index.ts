@@ -43,9 +43,10 @@ class MultipleTree {
     this.initialStructData = initialStructData;
   }
 
-  filter(callback: any) {
+  public filter(callback: any) {
     const vm = this;
     const { childrenKey } = this.option;
+
     function recursion(data: any, structData: any) {
       const { [childrenKey]: children, ...rest } = data;
       const { depth, treeIndex, route } = structData;
@@ -75,6 +76,20 @@ class MultipleTree {
             {
               ...structData,
               isLeaf: false,
+            },
+            vm.data,
+          )
+        ) {
+          return { ...rest };
+        }
+        return null;
+      } else {
+        if (
+          callback(
+            rest,
+            {
+              ...structData,
+              isLeaf: true,
             },
             vm.data,
           )

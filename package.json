@@ -49,6 +49,7 @@
     "@commitlint/cli": "^11.0.0",
     "@commitlint/config-conventional": "^11.0.0",
     "@types/jest": "^26.0.20",
+    "@umijs/fabric": "^2.5.2",
     "@umijs/test": "^3.0.5",
     "commitizen": "^4.2.2",
     "cz-lerna-changelog": "^2.0.3",
