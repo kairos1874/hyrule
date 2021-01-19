@@ -1,0 +1,15 @@
+{
+  "name": "@hyrule/util",
+  "version": "0.1.0",
+  "description": "toolkit",
+  "keywords": [
+    "algorithm"
+  ],
+  "files": [
+  ],
+  "main": "lib/index.js",
+  "module": "es/index.js",
+  "browser": "dist/index.min.js",
+  "scripts": {
+  }
+}
