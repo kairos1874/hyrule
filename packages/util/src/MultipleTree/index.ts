@@ -38,7 +38,7 @@ class MultipleTree {
   private readonly option: IOption;
   private readonly initialStructData: object;
 
-  constructor(data: object = {}, option: IOptionParams, initialStructData: IStructDataParams = {}) {
+  constructor(data: object, option: IOptionParams, initialStructData: IStructDataParams = {}) {
     const defaultOption = {
       childrenKey: 'children',
       routeKey: 'id',
@@ -58,17 +58,28 @@ class MultipleTree {
   map(callback: MapCallback) {
     const { childrenKey } = this.option;
     // @ts-ignore
-    const { [childrenKey]: children, ...rest } = this.data;
+    const { [childrenKey]: children } = this.data;
 
-    let target: any = {
-      ...callback(rest),
-    };
-    if (Array.isArray(children) && children.length) {
-      target.children = [];
-      children.forEach(item => {
-        // target.children.push(this.map(callback))
-      });
-    }
+    // function recursion(data, structData) {
+    //
+    // }
+    //
+    // return recursion(this.data, {
+    //   depth: 0, // 深度
+    //   index: '0', // 在树中的索引，在树中是唯一的，表现形式如 '0-3-4-2-1'，标记的是该节点在树中的位置
+    //   route: [].concat(this.data[this.option.routeKey]), // 由父节点到当前节点的路径，需要在 new 实例的时候指明 routeKey
+    //   ...this.initialStructData,
+    // })
+
+    // let target: any = {
+    //   ...callback(this.data, {}),
+    // };
+    // if (Array.isArray(children) && children.length) {
+    //   target.children = [];
+    //   children.forEach(item => {
+    //     // target.children.push(this.map(callback))
+    //   });
+    // }
   }
 
   /**
