@@ -3,7 +3,7 @@
 /**
  * 栈
  * */
-import LinkedList from './linkedList';
+import LinkedList from './LinkedList';
 
 export default class Stack {
   private linkedList: LinkedList;
