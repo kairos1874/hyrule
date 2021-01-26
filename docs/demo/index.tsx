@@ -9,8 +9,9 @@ import _get from 'lodash';
 const entity = new MultiTree(treeData2, {
   childrenKey: 'children',
   routeKey: 'label',
-  targetChildrenKey: 'childs',
+  targetChildrenKey: 'children',
 });
+debugger;
 
 console.log(
   entity.map((item, structData, vm) => {
@@ -18,6 +19,20 @@ console.log(
       ...item,
       ...structData,
     };
+  }),
+);
+
+console.log(
+  entity.pick((item, structData, vm) => {
+    // @ts-ignore
+    return item.label.includes('电影');
+  }),
+);
+
+console.log(
+  entity.filter((item, structData, vm) => {
+    // @ts-ignore
+    return item.label.includes('公司');
   }),
 );
 // debugger
