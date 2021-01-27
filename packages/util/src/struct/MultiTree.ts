@@ -28,8 +28,7 @@ interface IStructData {
   order?: number;
 }
 
-type Processor = (x?: object, y?: IStructData, z?: object | null) => object | void;
-type RelationProcessor = (x: any[]) => any | void;
+type Processor = (x?: object, y?: IStructData, z?: object | null) => void;
 type MapCallback = (x?: object, y?: IStructData, z?: object | null) => object;
 type PickCallback = (x?: object, y?: IStructData, z?: object | null) => boolean;
 type TraversalType = 'dfs' | 'bfs';
@@ -57,6 +56,112 @@ function mergeOptionParams(option?: IOptionParams) {
     ...option,
   };
   return targetOption;
+}
+
+// 初始化树结构每个节点的 结构属性
+function getInitialStructure(node: object, option: IOptionParams) {
+  const { childrenKey } = option;
+  const { [childrenKey]: children } = node;
+  const { routeKey } = option;
+  return {
+    depth: 0,
+    index: '0',
+    route: [].concat(node[routeKey]),
+    siblings: [node],
+    children: Array.isArray(children) && children.length > 0 ? children : [],
+    degree: Array.isArray(children) && children.length > 0 ? children.length : 0,
+    parent: null,
+  };
+}
+
+function getIterativeStructure(parentNode: object, option: IOptionParams, iterativeIndex: number) {
+  const { childrenKey, routeKey } = option;
+  const { [childrenKey]: children, structure, ...content } = parentNode;
+  const { depth, index, route } = structure;
+  const { children: subChildren } = children[iterativeIndex];
+
+  return {
+    depth: depth + 1,
+    index: index.concat(`-${iterativeIndex}`),
+    route: route.concat(_get(children[iterativeIndex], `${routeKey}`)),
+    siblings: children,
+    children: Array.isArray(subChildren) && subChildren.length > 0 ? subChildren : [],
+    degree: Array.isArray(subChildren) && subChildren.length > 0 ? subChildren.length : 0,
+    parent: content,
+  };
+}
+
+// 广度优先遍历
+export function bfsTraverse(data: object, callback: Processor, option?: IOptionParams) {
+  let order = 0;
+  const { childrenKey } = mergeOptionParams(option);
+  const queue = new Queue();
+  // 入队
+  queue.enqueue({
+    ...data,
+    structure: getInitialStructure(data, mergeOptionParams(option)),
+  });
+  while (!queue.isEmpty()) {
+    // 出队
+    const node = queue.dequeue();
+    const { [childrenKey]: children, structure, ...content } = node;
+    callback(
+      content,
+      {
+        ...structure,
+        order,
+      },
+      data,
+    );
+    order++;
+    if (Array.isArray(children) && children.length > 0) {
+      const length = children.length;
+      for (let i = 0; i <= length - 1; i++) {
+        const { children } = children[i];
+        queue.enqueue({
+          ...children[i],
+          structure: getIterativeStructure(node, mergeOptionParams(option), i),
+        });
+      }
+    }
+  }
+}
+
+// 深度优先遍历
+export function dfsTraverse(data: object, callback: Processor, option?: IOptionParams) {
+  let order = 0;
+  const { childrenKey } = mergeOptionParams(option);
+
+  const stack = new Stack();
+  // 入栈
+  stack.push({
+    ...data,
+    structure: getInitialStructure(data, mergeOptionParams(option)),
+  });
+  while (!stack.isEmpty()) {
+    // 出栈
+    const node = stack.pop();
+    const { [childrenKey]: children, structure, ...content } = node;
+    callback(
+      content,
+      {
+        ...structure,
+        order,
+      },
+      data,
+    );
+    order++;
+    if (Array.isArray(children) && children.length > 0) {
+      const length = children.length;
+      for (let i = length - 1; i >= 0; i--) {
+        // 入栈
+        stack.push({
+          ...children[i],
+          structure: getIterativeStructure(node, mergeOptionParams(option), i),
+        });
+      }
+    }
+  }
 }
 
 class MultiTree {
@@ -96,6 +201,7 @@ class MultiTree {
     if (this.data === null) {
       return null;
     }
+    let order = 0;
     const { childrenKey, targetChildrenKey, routeKey } = this.option;
 
     function recursion(data: any, structure: any) {
@@ -107,9 +213,11 @@ class MultiTree {
         {
           ...structure,
           isLeaf: !(Array.isArray(children) && children.length > 0),
+          order,
         },
         data,
       );
+      order++;
       if (Array.isArray(children) && children.length > 0) {
         target[targetChildrenKey] = [];
         for (let i = 0; i < children.length; i++) {
@@ -162,6 +270,7 @@ class MultiTree {
     if (this.data === null) {
       return [];
     }
+    let order = 0;
     const structuralData = this.getStructuralData();
     const target = [];
     const queue = new Queue();
@@ -191,6 +300,7 @@ class MultiTree {
     if (this.data === null) {
       return null;
     }
+    let order = 0;
 
     const { childrenKey, targetChildrenKey, routeKey } = this.option;
 
@@ -227,6 +337,7 @@ class MultiTree {
             {
               ...structData,
               isLeaf: false,
+              order,
             },
             vm.data as object,
           )
@@ -313,7 +424,7 @@ class MultiTree {
     switch (traversalType) {
       // 深度优先
       case 'dfs':
-        MultiTree.dfsTraverse(this.data, (item, structData, originData) => {
+        dfsTraverse(this.data, (item, structData, originData) => {
           result.push({
             ...item,
             parent: _get(structData, `parent.${relationKey}`),
@@ -322,7 +433,7 @@ class MultiTree {
         break;
       // 广度优先
       case 'bfs':
-        MultiTree.bfsTraverse(this.data, (item, structData, originData) => {
+        bfsTraverse(this.data, (item, structData, originData) => {
           result.push({
             ...item,
             parent: _get(structData, `parent.${relationKey}`),
@@ -331,7 +442,7 @@ class MultiTree {
         break;
       // 默认是深度优先
       default:
-        MultiTree.dfsTraverse(this.data, (item, structData, originData) => {
+        dfsTraverse(this.data, (item, structData, originData) => {
           result.push({
             ...item,
             parent: _get(structData, `parent.${relationKey}`),
@@ -343,13 +454,13 @@ class MultiTree {
   }
 
   /**
-   * 遍历，可以按深度优先或者广度优先的方式进行遍历
+   * 遍历每个节点，遍历方式有'深度优先'和'广度优先'两种方式
    * */
   forEach(callback: Processor, traversalType: TraversalType = 'dfs') {
     if (traversalType === 'bfs') {
-      MultiTree.bfsTraverse(this.data, callback, this.option);
+      bfsTraverse(this.data, callback, this.option);
     } else {
-      MultiTree.dfsTraverse(this.data, callback, this.option);
+      dfsTraverse(this.data, callback, this.option);
     }
   }
 
@@ -362,128 +473,19 @@ class MultiTree {
   // // 移动节点，待开发
   // moveNode() {}
 
-  /**
-   * 静态方法 dfsTraverse，用栈来实现的深度优先遍历
-   * */
-  public static dfsTraverse(data: object, processor: Processor, option?: IOptionParams) {
-    let order = 0;
-    const { routeKey, childrenKey } = mergeOptionParams(option);
-    const { [childrenKey]: rootChildren } = data;
+  // 递归实现的深度优先遍历，待实现
+  public static dfsTraverseWithRecursion(data: object, callback: Processor) {}
+  // 递归实现的广度优先遍历，待实现
+  public static bfsTraverseWithRecursion(data: object, callback: Processor) {}
+}
 
-    const stack = new Stack();
-    // 入栈
-    stack.push({
-      ...data,
-      structure: {
-        depth: 0,
-        index: '0',
-        route: [].concat(data[routeKey]),
-        siblings: [data],
-        children: Array.isArray(rootChildren) && rootChildren.length > 0 ? rootChildren : [],
-        degree: Array.isArray(rootChildren) && rootChildren.length > 0 ? rootChildren.length : 0,
-        parent: null,
-      },
-    });
-    while (!stack.isEmpty()) {
-      // 出栈
-      const node = stack.pop();
-      const { [childrenKey]: children, structure, ...content } = node;
-      const { depth, index, route } = structure;
-      processor(
-        content,
-        {
-          ...structure,
-          order,
-        },
-        data,
-      );
-      order++;
-      if (Array.isArray(children) && children.length > 0) {
-        const length = children.length;
-        for (let i = length - 1; i >= 0; i--) {
-          const { children: subChildren } = children[i];
-
-          stack.push({
-            ...children[i],
-            structure: {
-              depth: depth + 1,
-              index: index.concat(`-${i}`),
-              route: route.concat(_get(children[i], `${routeKey}`)),
-              siblings: children,
-              children: Array.isArray(subChildren) && subChildren.length > 0 ? subChildren : [],
-              degree: Array.isArray(subChildren) && subChildren.length > 0 ? subChildren.length : 0,
-              parent: content,
-            },
-          });
-        }
-      }
-    }
-  }
-
-  /**
-   * 静态方法 bfsTraverse，用队列来实现的广度优先遍历
-   * */
-  public static bfsTraverse(data: object, processor: Processor, option?: IOptionParams) {
-    let order = 0;
-    const { routeKey, childrenKey } = mergeOptionParams(option);
-
-    const { [childrenKey]: rootChildren } = data;
-    const queue = new Queue();
-    // 入队
-    queue.enqueue({
-      ...data,
-      structure: {
-        depth: 0,
-        index: '0',
-        route: [].concat(data[routeKey]),
-        siblings: [data],
-        children: Array.isArray(rootChildren) && rootChildren.length > 0 ? rootChildren : [],
-        degree: Array.isArray(rootChildren) && rootChildren.length > 0 ? rootChildren.length : 0,
-        parent: null,
-      },
-    });
-    while (!queue.isEmpty()) {
-      // 出队
-      const node = queue.dequeue();
-      const { [childrenKey]: children, structure, ...content } = node;
-      const { depth, index, route } = structure;
-      processor(
-        content,
-        {
-          ...structure,
-          order,
-        },
-        data,
-      );
-      order++;
-      if (Array.isArray(children) && children.length > 0) {
-        const length = children.length;
-        for (let i = 0; i <= length - 1; i++) {
-          const { children: subChildren } = children[i];
-          queue.enqueue({
-            ...children[i],
-            structure: {
-              depth: depth + 1,
-              index: index.concat(`-${i}`),
-              route: route.concat(_get(children[i], `${routeKey}`)),
-              siblings: children,
-              children: Array.isArray(subChildren) && subChildren.length > 0 ? subChildren : [],
-              degree: Array.isArray(subChildren) && subChildren.length > 0 ? subChildren.length : 0,
-              parent: content,
-            },
-          });
-        }
-      }
-    }
-  }
-
-  // 递归遍历，待实现
-  recursiveTraverse(data: object, processor: Processor) {}
+class Forest {
+  constructor(data: any[], option: IOptionParams) {}
 
   /**
    * 将数组转换成森林
    * */
-  static arrayToForest() {}
+  public static arrayToForest() {}
 }
 
 export default MultiTree;

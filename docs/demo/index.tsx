@@ -1,7 +1,7 @@
 /* eslint-disable react/jsx-no-target-blank */
 
 import React from 'react';
-import MultiTree from '@hyrule/util/src/struct/MultiTree';
+import MultiTree, { dfsTraverse, bfsTraverse } from '@hyrule/util/src/struct/MultiTree';
 import treeData from '@hyrule/util/test/treeData.mock';
 import treeData2 from '@hyrule/util/test/treeData2.mock';
 import _get from 'lodash';
@@ -36,11 +36,13 @@ const entity = new MultiTree(treeData2, {
 //   }),
 // );
 
-MultiTree.bfsTraverse(
+dfsTraverse(
   treeData2,
   (item, structData, vm) => {
+    // debugger
     console.log(item.label, structData.order, {
       ...item,
+      structData,
     });
   },
   {
