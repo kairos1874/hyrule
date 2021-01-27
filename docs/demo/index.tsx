@@ -11,31 +11,42 @@ const entity = new MultiTree(treeData2, {
   routeKey: 'label',
   targetChildrenKey: 'children',
 });
-debugger;
+// debugger;
 
-console.log(
-  entity.map((item, structData, vm) => {
-    return {
+// console.log(
+//   entity.map((item, structData, vm) => {
+//     return {
+//       ...item,
+//       ...structData,
+//     };
+//   }),
+// );
+//
+// console.log(
+//   entity.pick((item, structData, vm) => {
+//     // @ts-ignore
+//     return item.label.includes('电影');
+//   }),
+// );
+//
+// console.log(
+//   entity.filter((item, structData, vm) => {
+//     // @ts-ignore
+//     return item.label.includes('公司');
+//   }),
+// );
+
+MultiTree.bfsTraverse(
+  treeData2,
+  (item, structData, vm) => {
+    console.log(item.label, structData.order, {
       ...item,
-      ...structData,
-    };
-  }),
+    });
+  },
+  {
+    routeKey: 'label',
+  },
 );
-
-console.log(
-  entity.pick((item, structData, vm) => {
-    // @ts-ignore
-    return item.label.includes('电影');
-  }),
-);
-
-console.log(
-  entity.filter((item, structData, vm) => {
-    // @ts-ignore
-    return item.label.includes('公司');
-  }),
-);
-// debugger
 
 export default () => {
   return <div />;
