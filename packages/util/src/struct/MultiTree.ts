@@ -31,6 +31,7 @@ interface IStructData {
 type Processor = (x?: object, y?: IStructData, z?: object | null) => void;
 type MapCallback = (x?: object, y?: IStructData, z?: object | null) => object;
 type PickCallback = (x?: object, y?: IStructData, z?: object | null) => boolean;
+type ReduceCallback = (w?: any, x?: object, y?: IStructData, z?: object | null) => any;
 type TraversalType = 'dfs' | 'bfs';
 
 function mergeOptionParams(option?: IOptionParams) {
@@ -58,7 +59,7 @@ function mergeOptionParams(option?: IOptionParams) {
   return targetOption;
 }
 
-// 初始化树结构每个节点的 结构属性
+// 初始化树结构每个节点的 结构属性，主要用在回调函数中
 function getInitialStructure(node: object, option: IOptionParams) {
   const { childrenKey } = option;
   const { [childrenKey]: children } = node;
@@ -76,6 +77,7 @@ function getInitialStructure(node: object, option: IOptionParams) {
   };
 }
 
+// 每个节点的 结构属性的递增
 function getIterativeStructure(parentNode: object, option: IOptionParams, iterativeIndex: number) {
   const { childrenKey, routeKey } = option;
   const { [childrenKey]: children, structure, ...content } = parentNode;
@@ -121,7 +123,7 @@ export function bfsTraverse(data: object, callback: Processor, option?: IOptionP
     if (Array.isArray(children) && children.length > 0) {
       const length = children.length;
       for (let i = 0; i <= length - 1; i++) {
-        const { children } = children[i];
+        // const { children } = children[i];
         queue.enqueue({
           ...children[i],
           structure: getIterativeStructure(node, mergeOptionParams(option), i),
@@ -174,7 +176,7 @@ export function dfsTraverseWithRecursion(data: object, callback: Processor) {}
 export function bfsTraverseWithRecursion(data: object, callback: Processor) {}
 
 /**
- * 将数组转换成森林
+ * 将数组转换成森林，待开发
  * */
 export function arrayToForest() {}
 
@@ -434,7 +436,8 @@ class MultiTree {
   }
 
   /**
-   * 遍历每个节点，遍历方式有'深度优先'和'广度优先'两种方式
+   * 类似于数组的 forEach, 遍历每个节点，遍历方式有'深度优先'和'广度优先'两种方式
+   * dfs 是深度优先，bfs 是广度优先
    * */
   forEach(callback: Processor, traversalType: TraversalType = 'dfs') {
     if (traversalType === 'bfs') {
@@ -442,6 +445,26 @@ class MultiTree {
     } else {
       dfsTraverse(this.data, callback, this.option);
     }
+  }
+
+  /**
+   * reduce，类似数组的 reduce，可以用来做迭代累计等
+   * */
+  reduce(callback: ReduceCallback, initialValue, traversalType: TraversalType = 'dfs') {
+    let total = initialValue;
+    let traverse = bfsTraverse;
+    if (traversalType === 'bfs') {
+      traverse = dfsTraverse;
+    }
+    traverse(
+      this.data,
+      (item, nodeStructure, vm) => {
+        total = callback(total, item, nodeStructure, vm);
+      },
+      this.option,
+    );
+
+    return total;
   }
 
   // // 添加，删除，修改，待开发

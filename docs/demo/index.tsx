@@ -12,6 +12,12 @@ const entity = new MultiTree(treeData2, {
   targetChildrenKey: 'children',
 });
 
+console.log(
+  entity.reduce((prev, cur, nodeStructure, vm) => {
+    return prev.concat(cur.label);
+  }, []),
+);
+
 // console.log(entity.map((item, structData, vm) => {
 //   return {
 //     ...item,
