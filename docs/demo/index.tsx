@@ -11,6 +11,13 @@ const entity = new MultiTree(treeData2, {
   routeKey: 'label',
   targetChildrenKey: 'children',
 });
+
+// console.log(entity.map((item, structData, vm) => {
+//   return {
+//     ...item,
+//     structData,
+//   }
+// }))
 // debugger;
 
 // console.log(
@@ -29,26 +36,26 @@ const entity = new MultiTree(treeData2, {
 //   }),
 // );
 //
-// console.log(
-//   entity.filter((item, structData, vm) => {
-//     // @ts-ignore
-//     return item.label.includes('公司');
-//   }),
-// );
-
-dfsTraverse(
-  treeData2,
-  (item, structData, vm) => {
-    // debugger
-    console.log(item.label, structData.order, {
-      ...item,
-      structData,
-    });
-  },
-  {
-    routeKey: 'label',
-  },
+console.log(
+  entity.filter((item, structData, vm) => {
+    // @ts-ignore
+    return structData.depth === 1;
+  }),
 );
+
+// dfsTraverse(
+//   treeData2,
+//   (item, structData, vm) => {
+//     // debugger
+//     console.log(item.label, structData.order, {
+//       ...item,
+//       structData,
+//     });
+//   },
+//   {
+//     routeKey: 'label',
+//   },
+// );
 
 export default () => {
   return <div />;

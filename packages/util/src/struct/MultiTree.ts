@@ -63,14 +63,16 @@ function getInitialStructure(node: object, option: IOptionParams) {
   const { childrenKey } = option;
   const { [childrenKey]: children } = node;
   const { routeKey } = option;
+  const isChildrenArrayAndNotEmpty = Array.isArray(children) && children.length > 0;
   return {
     depth: 0,
     index: '0',
     route: [].concat(node[routeKey]),
     siblings: [node],
-    children: Array.isArray(children) && children.length > 0 ? children : [],
-    degree: Array.isArray(children) && children.length > 0 ? children.length : 0,
+    children: isChildrenArrayAndNotEmpty ? children : [],
+    degree: isChildrenArrayAndNotEmpty > 0 ? children.length : 0,
     parent: null,
+    isLeaf: !isChildrenArrayAndNotEmpty,
   };
 }
 
@@ -79,15 +81,17 @@ function getIterativeStructure(parentNode: object, option: IOptionParams, iterat
   const { [childrenKey]: children, structure, ...content } = parentNode;
   const { depth, index, route } = structure;
   const { children: subChildren } = children[iterativeIndex];
+  const isSubChildrenArrayAndNotEmpty = Array.isArray(subChildren) && subChildren.length > 0;
 
   return {
     depth: depth + 1,
     index: index.concat(`-${iterativeIndex}`),
     route: route.concat(_get(children[iterativeIndex], `${routeKey}`)),
     siblings: children,
-    children: Array.isArray(subChildren) && subChildren.length > 0 ? subChildren : [],
-    degree: Array.isArray(subChildren) && subChildren.length > 0 ? subChildren.length : 0,
+    children: isSubChildrenArrayAndNotEmpty ? subChildren : [],
+    degree: isSubChildrenArrayAndNotEmpty ? subChildren.length : 0,
     parent: content,
+    isLeaf: !isSubChildrenArrayAndNotEmpty,
   };
 }
 
@@ -164,10 +168,19 @@ export function dfsTraverse(data: object, callback: Processor, option?: IOptionP
   }
 }
 
+// 递归实现的深度优先遍历，待实现
+export function dfsTraverseWithRecursion(data: object, callback: Processor) {}
+// 递归实现的广度优先遍历，待实现
+export function bfsTraverseWithRecursion(data: object, callback: Processor) {}
+
+/**
+ * 将数组转换成森林
+ * */
+export function arrayToForest() {}
+
 class MultiTree {
   private readonly data: object | null;
   private readonly option: IOption;
-  // private structuralData: object | null;
 
   constructor(data: object | null, option: IOptionParams) {
     const defaultOption = {
@@ -201,53 +214,37 @@ class MultiTree {
     if (this.data === null) {
       return null;
     }
-    let order = 0;
-    const { childrenKey, targetChildrenKey, routeKey } = this.option;
+    const vm = this;
+    const { childrenKey, targetChildrenKey } = this.option;
+    // let order = 0
 
-    function recursion(data: any, structure: any) {
-      const { depth, index, route } = structure;
-
-      const { [childrenKey]: children, ...content } = data;
+    function recursion(data: object) {
+      const { [childrenKey]: children, structure, ...content } = data;
       const target = callback(
         content,
         {
           ...structure,
-          isLeaf: !(Array.isArray(children) && children.length > 0),
-          order,
+          // order,
         },
-        data,
+        vm.data,
       );
-      order++;
+      // order++
       if (Array.isArray(children) && children.length > 0) {
         target[targetChildrenKey] = [];
         for (let i = 0; i < children.length; i++) {
-          const subChildren = _get(children[i], `${childrenKey}`);
-
           target[targetChildrenKey].push(
-            recursion(children[i], {
-              depth: depth + 1,
-              index: index.concat(`-${i}`),
-              route: route.concat(_get(children[i], `${routeKey}`)),
-              siblings: children,
-              children: Array.isArray(subChildren) && subChildren.length > 0 ? subChildren : [],
-              degree: Array.isArray(subChildren) && subChildren.length > 0 ? subChildren.length : 0,
-              parent: content,
+            recursion({
+              ...children[i],
+              structure: getIterativeStructure(data, vm.option, i),
             }),
           );
         }
       }
       return target;
     }
-
-    const rootChildren = _get(this.data, `${childrenKey}`);
-    return recursion(this.data, {
-      depth: 0,
-      index: '0',
-      route: [].concat(this.data[routeKey]),
-      siblings: [this.data],
-      children: Array.isArray(rootChildren) && rootChildren.length > 0 ? rootChildren : [],
-      degree: Array.isArray(rootChildren) && rootChildren.length > 0 ? rootChildren.length : 0,
-      parent: null,
+    return recursion({
+      ...this.data,
+      structure: getInitialStructure(this.data, this.option),
     });
   }
 
@@ -270,7 +267,7 @@ class MultiTree {
     if (this.data === null) {
       return [];
     }
-    let order = 0;
+    // let order = 0
     const structuralData = this.getStructuralData();
     const target = [];
     const queue = new Queue();
@@ -300,27 +297,18 @@ class MultiTree {
     if (this.data === null) {
       return null;
     }
-    let order = 0;
+    // let order = 0;
 
-    const { childrenKey, targetChildrenKey, routeKey } = this.option;
+    const { childrenKey, targetChildrenKey } = this.option;
 
-    function recursion(data: any, structData: any) {
-      const { [childrenKey]: children, ...content } = data;
-      const { depth, index, route } = structData;
-
+    function recursion(data: object) {
+      const { [childrenKey]: children, structure, ...content } = data;
       if (Array.isArray(children) && children.length > 0) {
         const shortlisted: any[] = children
           .map((item, subIndex) => {
-            const subChildren = _get(item, `${childrenKey}`);
-
-            return recursion(item, {
-              depth: depth + 1,
-              index: index.concat(`-${subIndex}`),
-              route: route.concat(_get(item, `${routeKey}`)),
-              siblings: children,
-              children: Array.isArray(subChildren) && subChildren.length > 0 ? subChildren : [],
-              degree: Array.isArray(subChildren) && subChildren.length > 0 ? subChildren.length : 0,
-              parent: content,
+            return recursion({
+              ...item,
+              structure: getIterativeStructure(data, vm.option, subIndex),
             });
           })
           .filter(ele => ele !== null);
@@ -335,9 +323,8 @@ class MultiTree {
           callback(
             content,
             {
-              ...structData,
-              isLeaf: false,
-              order,
+              ...structure,
+              // order,
             },
             vm.data as object,
           )
@@ -350,8 +337,8 @@ class MultiTree {
           callback(
             content,
             {
-              ...structData,
-              isLeaf: true,
+              ...structure,
+              // order
             },
             vm.data as object,
           )
@@ -361,16 +348,9 @@ class MultiTree {
         return null;
       }
     }
-
-    const rootChildren = _get(this.data, `${childrenKey}`);
-    return recursion(this.data, {
-      depth: 0,
-      index: '0',
-      route: [].concat(this.data[routeKey]),
-      siblings: [this.data],
-      children: Array.isArray(rootChildren) && rootChildren.length > 0 ? rootChildren : [],
-      degree: Array.isArray(rootChildren) && rootChildren.length > 0 ? rootChildren.length : 0,
-      parent: null,
+    return recursion({
+      ...this.data,
+      structure: getInitialStructure(this.data, this.option),
     });
   }
 
@@ -424,7 +404,7 @@ class MultiTree {
     switch (traversalType) {
       // 深度优先
       case 'dfs':
-        dfsTraverse(this.data, (item, structData, originData) => {
+        dfsTraverse(this.data, (item, structData) => {
           result.push({
             ...item,
             parent: _get(structData, `parent.${relationKey}`),
@@ -433,7 +413,7 @@ class MultiTree {
         break;
       // 广度优先
       case 'bfs':
-        bfsTraverse(this.data, (item, structData, originData) => {
+        bfsTraverse(this.data, (item, structData) => {
           result.push({
             ...item,
             parent: _get(structData, `parent.${relationKey}`),
@@ -442,7 +422,7 @@ class MultiTree {
         break;
       // 默认是深度优先
       default:
-        dfsTraverse(this.data, (item, structData, originData) => {
+        dfsTraverse(this.data, (item, structData) => {
           result.push({
             ...item,
             parent: _get(structData, `parent.${relationKey}`),
@@ -472,20 +452,10 @@ class MultiTree {
   // reduce() {}
   // // 移动节点，待开发
   // moveNode() {}
-
-  // 递归实现的深度优先遍历，待实现
-  public static dfsTraverseWithRecursion(data: object, callback: Processor) {}
-  // 递归实现的广度优先遍历，待实现
-  public static bfsTraverseWithRecursion(data: object, callback: Processor) {}
 }
 
 class Forest {
   constructor(data: any[], option: IOptionParams) {}
-
-  /**
-   * 将数组转换成森林
-   * */
-  public static arrayToForest() {}
 }
 
 export default MultiTree;
