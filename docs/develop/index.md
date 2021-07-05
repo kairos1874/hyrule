@@ -4,7 +4,7 @@ order: 1
 group:
   path: /
 nav:
-  title: 开发规范
+  title: 数据结构和算法
   order: 2
   path: /develop
 ---
